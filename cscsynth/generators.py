@@ -31,6 +31,13 @@ def generate_dob(current_date: datetime.datetime, age_start: int = 1, age_end: i
     age_at_start_in_days = random.randint(365 * age_start, 365 * age_end)
     return current_date - datetime.timedelta(days=age_at_start_in_days)
 
+def generate_ethnicity() -> str:
+    # TODO: Maybe weight this?
+    return random.choice([
+        'WBRI', 'WIRI', 'WOTH', 'WIRT', 'WROM', 'MWBC', 'MWBA', 'MWAS', 'MOTH', 'AIND', 'APKN', 
+        'ABAN', 'AOTH', 'BCRB', 'BAFR', 'BOTH', 'CHNE', 'OOTH', 'REFU', 'NOBT'
+    ])
+
 def generate_motherhood_date(prob_is_mother: float, sex: int, dob: datetime.datetime) -> Optional[datetime.datetime]:
     mother_child_dob = None
     if sex == 2:
@@ -76,7 +83,7 @@ def generate_episodes(start_date, dob, probabilities: Probabilities) -> List[Epi
 
     all_episodes = []
     for episode_start, episode_length in zip(episode_starts, episode_lengths):
-        episodes = generate_care_episode(start_date, episode_length, probabilities)
+        episodes = generate_care_episode(episode_start, episode_length, probabilities)
         all_episodes.append(episodes)
 
     return list(itertools.chain.from_iterable(all_episodes))
@@ -86,6 +93,7 @@ def generate_care_episode(start_date: datetime.datetime, length_of_episode: int,
     start_episode = Episode(
         start_date=start_date,
         end_date=None,
+        reason_end=None,
         reason_for_new_episode='S',
         legal_status=_generate_legal_status(),
         cin=random.choice([f'N{i}' for i in range(1, 9)]),
@@ -107,7 +115,7 @@ def generate_care_episode(start_date: datetime.datetime, length_of_episode: int,
             new_reason = random.choices(
                 list(probabilities.reason_for_care.keys()), 
                 weights=list(probabilities.reason_for_care.values())
-            )
+            )[0]
             
             next_episode = deepcopy(last_episode)
             next_episode.start_date = current_date
@@ -120,7 +128,9 @@ def generate_care_episode(start_date: datetime.datetime, length_of_episode: int,
 
             # Change of placement
             if new_reason in ['P', 'T', 'B', 'U']:
-                place, place_provider, home_postcode, place_postcode, urn = _generate_new_placement()
+                next_episode.place, next_episode.place_provider, next_episode.home_postcode, next_episode.place_postcode, next_episode.urn = _generate_new_placement()
+
+            episodes.append(next_episode)
 
 
     episodes[-1].end_date = start_date + datetime.timedelta(days=length_of_episode)
