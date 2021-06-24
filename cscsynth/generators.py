@@ -129,6 +129,7 @@ def generate_care_episode(start_date: datetime.datetime, length_of_episode: int,
             # Change of placement
             if new_reason in ['P', 'T', 'B', 'U']:
                 next_episode.place, next_episode.place_provider, next_episode.home_postcode, next_episode.place_postcode, next_episode.urn = _generate_new_placement()
+                last_episode.reason_place_change = generate_reason_place_change()
 
             episodes.append(next_episode)
 
@@ -150,6 +151,12 @@ def _generate_reason_end() -> str:
     return random.choice([
         'E11', 'E12', 'E2', 'E3', 'E4A', 'E4B', 'E13', 'E41', 'E45', 'E46', 'E47', 'E48', 'E5',
         'E6', 'E7', 'E9', 'E14', 'E15', 'E16', 'E17', 'E8'
+    ])
+
+def generate_reason_place_change() -> str:
+    # TODO: These should probably not be picked randomly
+    return random.choice([
+        'CARPL', 'CLOSE', 'ALLEG', 'STAND', 'APPRR', 'CREQB', 'CREQO', 'CHILD', 'LAREQ', 'PLACE', 'CUSTOD', 'OTHER'
     ])
 
 def _generate_new_placement() -> Tuple[str, str, str, str, str]:
