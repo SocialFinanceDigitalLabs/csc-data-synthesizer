@@ -1,10 +1,11 @@
 import datetime
 from dataclasses import dataclass, field
-from typing import List, Dict
+from typing import List, Dict, Optional
 
 @dataclass
 class Episode:
     start_date: datetime.datetime
+    end_date: datetime.datetime
     reason_for_new_episode: str
     legal_status: str
     cin: str
@@ -12,9 +13,8 @@ class Episode:
     place_provider: str
     home_postcode: str
     place_postcode: str
-    end_date: datetime.datetime = None
-    reason_end: str = None
-    urn: str = None
+    reason_end: str
+    urn: Optional[str] = None
 
 
 @dataclass
@@ -37,13 +37,14 @@ class Child:
     upn: str
     child_id: int
     sex: int
+    ethnicity: str
     dob: datetime.datetime
     episodes: List[Episode]
-    mother_child_dob: datetime.datetime = None
+    mother_child_dob: Optional[datetime.datetime] = None
     previous_permanent: str = 'Z1'
-    prev_permanent_date: datetime.datetime = None
-    missing_periods: List[Missing] = None
-    date_uasc_ceased: datetime.datetime = None
+    prev_permanent_date: Optional[datetime.datetime] = None
+    missing_periods: Optional[List[Missing]] = None
+    date_uasc_ceased: Optional[datetime.datetime] = None
 
 @dataclass
 class Probabilities:
@@ -55,7 +56,7 @@ class Probabilities:
     is_uasc: float = 0.05
     is_mother: float = 0.01
     daily_episode_ending: float = 1 / 1000  # Average care length is around 1000 days
-    daily_episode_changing: float = 1 / 300  # Average episode length is around 300 days
+    daily_episode_changing: float = 1 / 300   # Average episode length is around 300 days
     average_extra_episode_rate: float = 0.15  # Modelled as 1 + Poisson(rate)
     reason_for_care: Dict[str, int] = field(default_factory=lambda: {
             'B': 0.02,

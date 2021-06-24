@@ -1,7 +1,9 @@
 import datetime
 import random
+from typing import List
 from .types import Probabilities, Child
 from .generators import (
+    generate_ethnicity,
     generate_upn,
     generate_child_id,
     generate_dob,
@@ -22,7 +24,7 @@ class ChildrenGenerator:
 
         self.probabilities = probabilities
 
-    def generate(self, num_children: int):
+    def generate(self, num_children: int) -> List[Child]:
         upn_generator = generate_upn()
         child_id_generator = generate_child_id()
 
@@ -37,7 +39,6 @@ class ChildrenGenerator:
 
             date_uasc_ceased = generate_uasc_ceased_date(self.probabilities.is_uasc, dob)
             
-            # TODO: Generate episodes
             episodes = generate_episodes(self.start_date, dob, self.probabilities)
 
             # TODO: Generate a set of missing episodes
@@ -48,6 +49,7 @@ class ChildrenGenerator:
                 child_id=child_id,
                 dob=dob,
                 sex=sex,
+                ethnicity=generate_ethnicity(),
                 episodes=episodes,
                 mother_child_dob=mother_child_dob,
                 missing_periods=missing_periods,
