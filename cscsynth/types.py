@@ -14,6 +14,7 @@ class Episode:
     home_postcode: str
     place_postcode: str
     reason_end: str
+    reason_place_change: Optional[str] = None
     urn: Optional[str] = None
 
 
