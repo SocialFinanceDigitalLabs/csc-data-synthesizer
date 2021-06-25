@@ -53,13 +53,20 @@ class Probabilities:
     Probability set for generating the data.
 
     The default values are estimated (roughly) from real 903 data.
+
+    :param is_uasc: The probability that any given child in care is UASC.
+    :param is_mother: The probability that a female in care will be a mother at any point.
+    :param daily_episode_ending: The daily probability of a LAC period ending.
+    :param daily_episode_changing: The daily probability of a LAC period changing (placement/legal status/carer)
+    :param extra_episode_rate: The average rate of extra periods of care (beyond 1), modelled as 1 + Poisson(rate)
+    :param reason_for_episode_change: A dict with the episode change keys, and associated probability weights (sum to 1)
     """
     is_uasc: float = 0.05
     is_mother: float = 0.01
     daily_episode_ending: float = 1 / 1000  # Average care length is around 1000 days
     daily_episode_changing: float = 1 / 300   # Average episode length is around 300 days
-    average_extra_episode_rate: float = 0.15  # Modelled as 1 + Poisson(rate)
-    reason_for_care: Dict[str, int] = field(default_factory=lambda: {
+    average_extra_episode_rate: float = 0.15  
+    reason_for_episode_change: Dict[str, int] = field(default_factory=lambda: {
             'B': 0.02,
             'L': 0.27,
             'P': 0.605,

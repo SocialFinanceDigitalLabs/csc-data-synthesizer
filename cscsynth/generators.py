@@ -166,7 +166,7 @@ def generate_care_episode(start_date: datetime.datetime, length_of_episode: int,
     :param start_date: The start date of the episode set
     :param length_of_episode: The overall length of the entire episode set
     :param probabilities: A Probabilities object, used for
-        - reason_for_care - A weighted dictionary of reasons for an episode changing, with probabilities.
+        - reason_for_episode_change - A weighted dictionary of reasons for an episode changing, with probabilities.
     :returns: A list of episodes for this period of care.
     """
 
@@ -194,8 +194,8 @@ def generate_care_episode(start_date: datetime.datetime, length_of_episode: int,
             last_episode.reason_end = 'X1'  # The change of episode code
 
             new_reason = random.choices(
-                list(probabilities.reason_for_care.keys()), 
-                weights=list(probabilities.reason_for_care.values())
+                list(probabilities.reason_for_episode_change.keys()), 
+                weights=list(probabilities.reason_for_episode_change.values())
             )[0]
             
             next_episode = deepcopy(last_episode)
