@@ -58,5 +58,18 @@ def create_episodes(start_date: datetime.datetime, end_date: datetime.datetime, 
             data['PL_POST'].append(episode.place_postcode)
             data['URN'].append(episode.urn)
 
+    return pd.DataFrame(data)
+
+def create_uasc(start_date: datetime.datetime, end_date: datetime.datetime, all_children: List[Child]) -> pd.DataFrame:
+    children = filter_children_for_period(start_date, end_date, all_children)
+
+    data = defaultdict(list)
+
+    for child in children:
+        if child.date_uasc_ceased is not None:
+            data['CHILD'].append(child.child_id)
+            data['SEX'].append(child.sex)
+            data['DOB'].append(child.dob.strftime('%d/%m/%Y'))
+            data['DUC'].append(child.date_uasc_ceased.strftime('%d/%m/%Y'))
 
     return pd.DataFrame(data)
