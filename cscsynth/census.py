@@ -1,17 +1,19 @@
 import datetime
+import xml.etree.ElementTree as ET
 import pandas as pd
 from collections import defaultdict
 from copy import deepcopy
 from typing import List
 from .types import Child
 
-def filter_children_for_period(start_date: datetime.datetime, end_date: datetime.datetime, all_children: List[Child]):
+def snapshot_children_for_period(start_date: datetime.datetime, end_date: datetime.datetime, all_children: List[Child]):
     # Keep any children who have their first interaction before the end date, and haven't totally finished with care
     children = [
         deepcopy(c) for c in all_children 
         if min(e.start_date for e in c.episodes) < end_date and max(e.end_date for e in c.episodes) > start_date
     ]
 
+    # Any future events need to be removed (or set to None)
     for c in children:
         if c.mother_child_dob is not None and c.mother_child_dob > end_date:
             c.mother_child_dob = None
@@ -24,9 +26,7 @@ def filter_children_for_period(start_date: datetime.datetime, end_date: datetime
 
     return children
 
-def create_header(start_date: datetime.datetime, end_date: datetime.datetime, all_children: List[Child]) -> pd.DataFrame:
-    children = filter_children_for_period(start_date, end_date, all_children)
-
+def create_header(children: List[Child]) -> pd.DataFrame:
     return pd.DataFrame({
         'CHILD': [c.child_id for c in children],
         'SEX': [c.sex for c in children],
@@ -37,9 +37,7 @@ def create_header(start_date: datetime.datetime, end_date: datetime.datetime, al
         'MC_DOB': [c.mother_child_dob.strftime('%d/%m/%Y') if c.mother_child_dob is not None else None for c in children],
     })
 
-def create_episodes(start_date: datetime.datetime, end_date: datetime.datetime, all_children: List[Child]) -> pd.DataFrame:
-    children = filter_children_for_period(start_date, end_date, all_children)
-
+def create_episodes(children: List[Child]) -> pd.DataFrame:
     data = defaultdict(list)
 
     for child in children:
@@ -60,9 +58,7 @@ def create_episodes(start_date: datetime.datetime, end_date: datetime.datetime, 
 
     return pd.DataFrame(data)
 
-def create_uasc(start_date: datetime.datetime, end_date: datetime.datetime, all_children: List[Child]) -> pd.DataFrame:
-    children = filter_children_for_period(start_date, end_date, all_children)
-
+def create_uasc(children: List[Child]) -> pd.DataFrame:
     data = defaultdict(list)
 
     for child in children:
@@ -73,3 +69,4 @@ def create_uasc(start_date: datetime.datetime, end_date: datetime.datetime, all_
             data['DUC'].append(child.date_uasc_ceased.strftime('%d/%m/%Y'))
 
     return pd.DataFrame(data)
+
