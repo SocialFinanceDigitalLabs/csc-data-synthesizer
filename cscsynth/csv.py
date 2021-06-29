@@ -1,8 +1,18 @@
+import os
 import pandas as pd
 from collections import defaultdict
 from copy import deepcopy
 from typing import List
 from .types import Child
+
+def create_csv(children: List[Child], output_dir: str):
+    header_df = create_header(children)
+    episodes_df = create_episodes(children)
+    uasc_df = create_uasc(children)
+
+    header_df.to_csv(os.path.join(output_dir, 'header.csv'), index=False)
+    episodes_df.to_csv(os.path.join(output_dir, 'episodes.csv'), index=False)
+    uasc_df.to_csv(os.path.join(output_dir, 'uasc.csv'), index=False)
 
 def create_header(children: List[Child]) -> pd.DataFrame:
     return pd.DataFrame({
