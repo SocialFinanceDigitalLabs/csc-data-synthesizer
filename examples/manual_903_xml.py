@@ -1,6 +1,7 @@
 import datetime
 from cscsynth import ChildrenGenerator
-from cscsynth.census import create_xml, snapshot_children_for_period
+from cscsynth.census import snapshot_children_for_period
+from cscsynth.xml import create_xml
 
 start_date = datetime.datetime(2015, 1, 1)
 end_date = datetime.datetime(2020, 1 ,1)

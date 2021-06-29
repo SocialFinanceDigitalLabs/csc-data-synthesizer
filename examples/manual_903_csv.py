@@ -1,6 +1,7 @@
 import datetime
 from cscsynth import ChildrenGenerator
-from cscsynth.census import create_episodes, create_header, create_uasc, snapshot_children_for_period
+from cscsynth.census import snapshot_children_for_period
+from cscsynth.csv import create_episodes, create_header, create_uasc
 
 start_date = datetime.datetime(2015, 1, 1)
 end_date = datetime.datetime(2020, 1 ,1)

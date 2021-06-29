@@ -2,7 +2,8 @@ import os
 import datetime
 from lxml import etree
 from cscsynth import ChildrenGenerator
-from cscsynth.census import create_xml, snapshot_children_for_period
+from cscsynth.census import snapshot_children_for_period
+from cscsynth.xml import create_xml
 
 def test_xml_schema(tmpdir):
     base_path = os.path.join(os.path.dirname(__file__), 'data')
