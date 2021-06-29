@@ -20,7 +20,7 @@ def test_xml_schema(tmpdir):
     census_end = datetime.datetime(2018, 4, 1)
     children = snapshot_children_for_period(census_start, census_end, all_children)
 
-    output_path = os.path.join(base_path, 'generated_903.xml')
+    output_path = os.path.join(os.path.dirname(__file__), 'output', 'generated_903.xml')
     create_xml(children, output_path)
     
     created_xml = etree.parse(output_path)
