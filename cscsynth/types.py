@@ -20,7 +20,6 @@ class Episode:
 
 @dataclass
 class Missing:
-    child_id: int
     missing_type: str
     start_date: datetime.datetime
     end_date: datetime.datetime
@@ -28,7 +27,6 @@ class Missing:
 
 @dataclass
 class Review:
-    child_id: int
     review_code: str
     review_date: datetime.datetime
 
@@ -41,6 +39,7 @@ class Child:
     ethnicity: str
     dob: datetime.datetime
     episodes: List[Episode]
+    reviews: List[Review]
     mother_child_dob: Optional[datetime.datetime] = None
     previous_permanent: str = 'Z1'
     prev_permanent_date: Optional[datetime.datetime] = None
@@ -60,6 +59,7 @@ class Probabilities:
     :param daily_episode_changing: The daily probability of a LAC period changing (placement/legal status/carer)
     :param extra_episode_rate: The average rate of extra periods of care (beyond 1), modelled as 1 + Poisson(rate)
     :param reason_for_episode_change: A dict with the episode change keys, and associated probability weights (sum to 1)
+    :param review_frequency: The daily frequency of reviews
     """
     is_uasc: float = 0.05
     is_mother: float = 0.01
@@ -73,3 +73,4 @@ class Probabilities:
             'T': 0.1,
             'U': 0.005,
         })
+    review_frequency: float = 1 / 365

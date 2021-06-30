@@ -10,6 +10,7 @@ from .generators import (
     generate_motherhood_date,
     generate_uasc_ceased_date,
     generate_episodes,
+    generate_reviews,
 )
 
 
@@ -41,6 +42,8 @@ class ChildrenGenerator:
             
             episodes = generate_episodes(self.start_date, dob, self.probabilities)
 
+            reviews = generate_reviews(episodes, self.probabilities.review_frequency)
+
             # TODO: Generate a set of missing episodes
             missing_periods = []
             
@@ -51,6 +54,7 @@ class ChildrenGenerator:
                 sex=sex,
                 ethnicity=generate_ethnicity(),
                 episodes=episodes,
+                reviews=reviews,
                 mother_child_dob=mother_child_dob,
                 missing_periods=missing_periods,
                 date_uasc_ceased=date_uasc_ceased,

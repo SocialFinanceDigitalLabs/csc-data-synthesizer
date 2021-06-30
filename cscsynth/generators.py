@@ -6,7 +6,7 @@ import datetime
 from typing import Optional, List, Dict, Tuple
 from scipy.stats import nbinom
 from copy import deepcopy
-from .types import Probabilities, Episode
+from .types import Probabilities, Episode, Review
 
 def generate_child_id() -> int:
     """
@@ -291,3 +291,41 @@ def _generate_postcode() -> str:
     last_letters = ''.join(random.choice(string.ascii_uppercase) for _ in range(2))
 
     return first_letter + str(numbers) + ' ' + str(last_number) + last_letters
+
+
+def generate_reviews(episodes: List[Episode], review_frequency: float) -> List[Review]:
+    total_days_in_care = sum((e.end_date - e.start_date).days for e in episodes)
+
+    # Must be at least one review if in care for 20 days or longer
+    num_reviews = max([
+        total_days_in_care > 20, 
+        int(np.random.poisson(review_frequency * total_days_in_care)),
+    ])
+
+    review_days = [random.randint(0, total_days_in_care - 1) for _ in range(num_reviews)]
+
+    # We then do a bit of work to get from the days view to the right dates that are inside episodes
+    reviews = []
+    current_days = 0
+    for e in episodes:
+        episode_length = (e.end_date - e.start_date).days
+        for episode_day in range(episode_length):
+            # Check if this is the day selected for review
+            for review_day in review_days:
+                if review_day == current_days:
+                    reviews.append(Review(
+                        review_date=e.start_date + datetime.timedelta(days=episode_day),
+                        review_code=_generate_review_code(),
+                    ))
+
+            current_days += 1
+
+    return reviews
+
+def _generate_review_code() -> str:
+    review_code = random.choice([f'PN{i}' for i in range(8)])
+
+    return review_code
+
+        
+
