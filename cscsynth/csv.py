@@ -9,10 +9,12 @@ def create_csv(children: List[Child], output_dir: str):
     header_df = create_header(children)
     episodes_df = create_episodes(children)
     uasc_df = create_uasc(children)
+    reviews_df = create_reviews(children)
 
     header_df.to_csv(os.path.join(output_dir, 'header.csv'), index=False)
     episodes_df.to_csv(os.path.join(output_dir, 'episodes.csv'), index=False)
     uasc_df.to_csv(os.path.join(output_dir, 'uasc.csv'), index=False)
+    reviews_df.to_csv(os.path.join(output_dir, 'reviews.csv'), index=False)
 
 def create_header(children: List[Child]) -> pd.DataFrame:
     return pd.DataFrame({
@@ -55,5 +57,17 @@ def create_uasc(children: List[Child]) -> pd.DataFrame:
             data['SEX'].append(child.sex)
             data['DOB'].append(child.dob.strftime('%d/%m/%Y'))
             data['DUC'].append(child.date_uasc_ceased.strftime('%d/%m/%Y'))
+
+    return pd.DataFrame(data)
+
+def create_reviews(children: List[Child]) -> pd.DataFrame:
+    data = defaultdict(list)
+
+    for child in children:
+        for review in child.reviews:
+            data['CHILD'].append(child.child_id)
+            data['DOB'].append(child.dob.strftime('%d/%m/%Y'))
+            data['REVIEW'].append(review.review_date.strftime('%d/%m/%Y'))
+            data['REVIEW_CODE'].append(review.review_code)
 
     return pd.DataFrame(data)
