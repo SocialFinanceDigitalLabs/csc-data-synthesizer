@@ -25,7 +25,12 @@ def create_xml(children: List[Child], file_name: str) -> ET:
         header_add('UASC', str(1) if child.date_uasc_ceased is not None else None)
         # TODO: Add adoption
         # TODO: Add missing episodes
-        # TODO: Add reviews
+
+        for review in child.reviews:
+            reviews_node = ET.SubElement(header, 'AREVIEW')
+            _make_node_with_text(reviews_node, 'REVIEW', review.review_date.strftime('%d/%m/%Y'))
+            _make_node_with_text(reviews_node, 'REVIEW_CODE', review.review_code)
+
         header_add('MOTHER', str(1) if child.mother_child_dob is not None else None)
         header_add('MC_DOB', child.mother_child_dob.strftime('%d/%m/%Y') if child.mother_child_dob is not None else None)
         # TODO: Add previous permanance info
