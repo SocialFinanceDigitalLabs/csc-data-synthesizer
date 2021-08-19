@@ -37,6 +37,16 @@ class LeavingCareData:
     activ: str
 
 @dataclass
+class AdoptionData:
+    start_date: datetime.datetime
+    end_date: datetime.datetime
+    reason_ceased: str
+    foster_care: str
+    number_adopters: str
+    sex_adopter: str
+    ls_adopter: str
+
+@dataclass
 class Child:
     upn: str
     child_id: int
@@ -51,6 +61,7 @@ class Child:
     prev_permanent_date: Optional[datetime.datetime] = None
     missing_periods: Optional[List[Missing]] = None
     date_uasc_ceased: Optional[datetime.datetime] = None
+    adoption_data: Optional[AdoptionData] = None
 
 @dataclass
 class Probabilities:
@@ -69,6 +80,7 @@ class Probabilities:
     """
     is_uasc: float = 0.05
     is_mother: float = 0.01
+    is_adopted: float = 0.05
     daily_episode_ending: float = 1 / 1000  # Average care length is around 1000 days
     daily_episode_changing: float = 1 / 300   # Average episode length is around 300 days
     average_extra_episode_rate: float = 0.15  

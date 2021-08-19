@@ -6,7 +6,7 @@ import datetime
 from typing import Optional, List, Dict, Tuple
 from scipy.stats import nbinom
 from copy import deepcopy
-from .types import LeavingCareData, Probabilities, Episode, Review
+from .types import AdoptionData, LeavingCareData, Probabilities, Episode, Review
 
 def generate_child_id() -> int:
     """
@@ -333,5 +333,22 @@ def generate_leaving_care() -> LeavingCareData:
         in_touch=random.choice(['YES', 'NO', 'DIED', 'REFU', 'NREQ', 'RHOM']),
         activ=random.choice(['F1', 'P1', 'F2', 'P2', 'F3', 'P3', 'G4', 'G5', 'G6', '0']),
         accom=random.choice([code + suitability for code in 'BCDEGHKRSTUVWZYZ0' for suitability in '12'])
+    )
+
+def generate_adoption_data(child_start_date, is_adopted) -> AdoptionData:
+    if random.random() > is_adopted:
+        return None
+
+    adoption_start_date = child_start_date + datetime.timedelta(days=random.randint(0, 365))    
+    adoption_end_date = adoption_start_date + datetime.timedelta(days=random.randint(365, 365 * 5))    
+
+    return AdoptionData(
+        start_date=adoption_start_date,
+        end_date=adoption_end_date,
+        reason_ceased='XXX', # no info on what this should be
+        foster_care=random.choice('01'),
+        number_adopters=random.choice('12'),
+        sex_adopter=random.choice(['F1', 'FF', 'M1', 'MF', 'MM']),
+        ls_adopter=random.choice(['L0', 'L11',  'L12', 'L2', 'L3', 'L4'])
     )
 

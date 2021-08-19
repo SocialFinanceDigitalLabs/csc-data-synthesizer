@@ -27,8 +27,16 @@ def create_xml(children: List[Child], file_name: str) -> ET:
             header_add('IN_TOUCH', child.leaving_care_data.in_touch)
             header_add('ACTIV', child.leaving_care_data.activ)
             header_add('ACCOM', child.leaving_care_data.accom)
-        # TODO: Add adoption
-        # TODO: Add missing episodes
+
+
+        if child.adoption_data is not None:
+            ad = child.adoption_data
+            header_add('DATE_INT', ad.start_date.strftime('%d/%m/%Y'))
+            header_add('DATE_MATCH', ad.start_date.strftime('%d/%m/%Y'))
+            header_add('FOSTER_CARE', ad.foster_care)
+            header_add('NB_ADOPTR', ad.number_adopters)
+            header_add('SEX_ADOPTR', ad.sex_adopter)
+            header_add('LS_ADOPTR', ad.ls_adopter)
 
         for review in child.reviews:
             reviews_node = ET.SubElement(header, 'AREVIEW')
@@ -37,6 +45,17 @@ def create_xml(children: List[Child], file_name: str) -> ET:
 
         header_add('MOTHER', str(1) if child.mother_child_dob is not None else None)
         header_add('MC_DOB', child.mother_child_dob.strftime('%d/%m/%Y') if child.mother_child_dob is not None else None)
+
+        if child.adoption_data is not None:
+            # Only support a single adoption
+            adoption_node = ET.SubElement(header, 'AD_PLACED')
+            _make_node_with_text(adoption_node, 'DATE_PLACED', ad.start_date.strftime('%d/%m/%Y'))
+            if ad.reason_ceased is not None:
+                _make_node_with_text(adoption_node, 'DATE_PLACED_CEASED', ad.end_date.strftime('%d/%m/%Y'))
+                _make_node_with_text(adoption_node, 'REASON_PLACED_CEASED', ad.reason_ceased)
+
+        # TODO: Add missing episodes
+
         # TODO: Add previous permanance info
         # TODO: Add OC2
 
