@@ -10,11 +10,13 @@ def create_csv(children: List[Child], output_dir: str):
     episodes_df = create_episodes(children)
     uasc_df = create_uasc(children)
     reviews_df = create_reviews(children)
+    oc3_df = create_oc3(children)
 
     header_df.to_csv(os.path.join(output_dir, 'header.csv'), index=False)
     episodes_df.to_csv(os.path.join(output_dir, 'episodes.csv'), index=False)
     uasc_df.to_csv(os.path.join(output_dir, 'uasc.csv'), index=False)
     reviews_df.to_csv(os.path.join(output_dir, 'reviews.csv'), index=False)
+    oc3_df.to_csv(os.path.join(output_dir, 'oc3.csv'), index=False)
 
 def create_header(children: List[Child]) -> pd.DataFrame:
     return pd.DataFrame({
@@ -69,5 +71,18 @@ def create_reviews(children: List[Child]) -> pd.DataFrame:
             data['DOB'].append(child.dob.strftime('%d/%m/%Y'))
             data['REVIEW'].append(review.review_date.strftime('%d/%m/%Y'))
             data['REVIEW_CODE'].append(review.review_code)
+
+    return pd.DataFrame(data)
+
+def create_oc3(children: List[Child]) -> pd.DataFrame:
+    data = defaultdict(list)
+
+    for child in children:
+        if child.leaving_care_data is not None:
+            data['CHILD'].append(child.child_id)
+            data['DOB'].append(child.dob.strftime('%d/%m/%Y'))
+            data['IN_TOUCH'].append(child.leaving_care_data.in_touch)
+            data['ACTIV'].append(child.leaving_care_data.activ)
+            data['ACCOM'].append(child.leaving_care_data.accom)
 
     return pd.DataFrame(data)

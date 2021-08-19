@@ -1,3 +1,4 @@
+import os
 import datetime
 from cscsynth import ChildrenGenerator
 from cscsynth.census import snapshot_children_for_period
@@ -14,4 +15,5 @@ census_start = datetime.datetime(2017, 4, 1)
 census_end = datetime.datetime(2018, 4, 1)
 children = snapshot_children_for_period(census_start, census_end, all_children)
 
-create_xml(children, 'fake_903.xml')
+output_path = os.path.join(os.path.dirname(__file__), 'output', 'fake_903.xml')
+create_xml(children, output_path)

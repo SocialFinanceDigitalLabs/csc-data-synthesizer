@@ -6,7 +6,7 @@ import datetime
 from typing import Optional, List, Dict, Tuple
 from scipy.stats import nbinom
 from copy import deepcopy
-from .types import Probabilities, Episode, Review
+from .types import LeavingCareData, Probabilities, Episode, Review
 
 def generate_child_id() -> int:
     """
@@ -328,4 +328,10 @@ def _generate_review_code() -> str:
     return review_code
 
         
+def generate_leaving_care() -> LeavingCareData:
+    return LeavingCareData(
+        in_touch=random.choice(['YES', 'NO', 'DIED', 'REFU', 'NREQ', 'RHOM']),
+        activ=random.choice(['F1', 'P1', 'F2', 'P2', 'F3', 'P3', 'G4', 'G5', 'G6', '0']),
+        accom=random.choice([code + suitability for code in 'BCDEGHKRSTUVWZYZ0' for suitability in '12'])
+    )
 

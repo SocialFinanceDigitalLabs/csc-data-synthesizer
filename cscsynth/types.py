@@ -30,6 +30,11 @@ class Review:
     review_code: str
     review_date: datetime.datetime
 
+@dataclass
+class LeavingCareData:
+    accom: str
+    in_touch: str
+    activ: str
 
 @dataclass
 class Child:
@@ -40,6 +45,7 @@ class Child:
     dob: datetime.datetime
     episodes: List[Episode]
     reviews: List[Review]
+    leaving_care_data: Optional[LeavingCareData] = None
     mother_child_dob: Optional[datetime.datetime] = None
     previous_permanent: str = 'Z1'
     prev_permanent_date: Optional[datetime.datetime] = None

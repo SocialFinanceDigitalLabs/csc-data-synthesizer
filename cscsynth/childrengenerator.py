@@ -4,6 +4,7 @@ from typing import List
 from .types import Probabilities, Child
 from .generators import (
     generate_ethnicity,
+    generate_leaving_care,
     generate_upn,
     generate_child_id,
     generate_dob,
@@ -58,6 +59,7 @@ class ChildrenGenerator:
                 mother_child_dob=mother_child_dob,
                 missing_periods=missing_periods,
                 date_uasc_ceased=date_uasc_ceased,
+                leaving_care_data=generate_leaving_care(),
             )
 
             children.append(child)

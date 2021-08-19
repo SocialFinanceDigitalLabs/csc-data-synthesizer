@@ -15,6 +15,10 @@ def snapshot_children_for_period(start_date: datetime.datetime, end_date: dateti
         if c.mother_child_dob is not None and c.mother_child_dob > end_date:
             c.mother_child_dob = None
 
+        # Only include leaving data for those over 17.
+        if (end_date - c.dob).days / 365 <= 17:
+            c.leaving_care_data = None
+
         c.episodes = [deepcopy(e) for e in c.episodes if start_date < e.start_date < end_date or start_date < e.end_date < end_date]
         for episode in c.episodes:
             if episode.end_date > end_date:
