@@ -10,6 +10,7 @@ def create_csv(children: List[Child], output_dir: str):
     episodes_df = create_episodes(children)
     uasc_df = create_uasc(children)
     reviews_df = create_reviews(children)
+    oc2_df = create_oc2(children)
     oc3_df = create_oc3(children)
     ad1_df = create_ad1(children)
     sbpfa_df = create_should_be_placed_for_adoption(children)
@@ -18,6 +19,7 @@ def create_csv(children: List[Child], output_dir: str):
     episodes_df.to_csv(os.path.join(output_dir, 'episodes.csv'), index=False)
     uasc_df.to_csv(os.path.join(output_dir, 'uasc.csv'), index=False)
     reviews_df.to_csv(os.path.join(output_dir, 'reviews.csv'), index=False)
+    oc2_df.to_csv(os.path.join(output_dir, 'oc2.csv'), index=False)
     oc3_df.to_csv(os.path.join(output_dir, 'oc3.csv'), index=False)
     ad1_df.to_csv(os.path.join(output_dir, 'ad1.csv'), index=False)
     sbpfa_df.to_csv(os.path.join(output_dir, 'placed_for_adoption.csv'), index=False)
@@ -119,3 +121,28 @@ def create_should_be_placed_for_adoption(children: List[Child]) -> pd.DataFrame:
             data['REASON_PLACED_CEASED'].append(ad.reason_ceased if ad.reason_ceased is not None else None)
 
     return pd.DataFrame(data)
+
+def create_oc2(children: List[Child]) -> pd.DataFrame:
+    bool_to_str = lambda x: 1 if x else 0
+    data = defaultdict(list)
+    for child in children:
+        if child.outcomes_data is not None:
+            oc = child.outcomes_data
+            data['CHILD'].append(child.child_id)
+            data['DOB'].append(child.dob.strftime('%d/%m/%Y'))
+            data['SDQ_SCORE'].append(oc.sdq_score)
+            data['SDQ_REASON'].append(oc.sdq_reason)
+            data['CONVICTED'].append(bool_to_str(oc.convicted))
+            data['HEALTH_CHECK'].append(bool_to_str(oc.health_check))
+            data['IMMUNISATIONS'].append(bool_to_str(oc.immunisations))
+            data['TEETH_CHECK'].append(bool_to_str(oc.teeth_check))
+            data['HEALTH_ASSESSMENT'].append(bool_to_str(oc.health_assessment))
+            data['SUBSTANCE_MISUSE'].append(bool_to_str(oc.substance_misuse))
+            data['INTERVENTION_RECEIVED'].append(bool_to_str(oc.intervention_received))
+            data['INTERVENTION_OFFERED'].append(bool_to_str(oc.intervention_offered))
+
+    df =  pd.DataFrame(data)
+    # Pandas converts ints with null to float by default, so need to convert back
+    # to nullable integer.
+    df['SDQ_SCORE'] = df['SDQ_SCORE'].astype('Int64') 
+    return df

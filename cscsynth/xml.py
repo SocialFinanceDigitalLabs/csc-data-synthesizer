@@ -48,7 +48,25 @@ def create_xml(children: List[Child], file_name: str) -> ET:
         header_add('MOTHER', str(1) if child.mother_child_dob is not None else None)
         header_add('MC_DOB', child.mother_child_dob.strftime('%d/%m/%Y') if child.mother_child_dob is not None else None)
 
+        if child.outcomes_data is not None:
+            od = child.outcomes_data
+            bool_to_str = lambda x: '1' if x else '0'
+            oc2_node = ET.SubElement(header, 'OC2')
+            if od.sdq_score is not None:
+                _make_node_with_text(oc2_node, 'SDQ_SCORE', str(od.sdq_score))
+            if od.sdq_reason is not None:
+                _make_node_with_text(oc2_node, 'SDQ_REASON', od.sdq_reason)
+            _make_node_with_text(oc2_node, 'CONVICTED', bool_to_str(od.convicted))
+            _make_node_with_text(oc2_node, 'HEALTH_CHECK', bool_to_str(od.health_check))
+            _make_node_with_text(oc2_node, 'IMMUNISATIONS', bool_to_str(od.immunisations))
+            _make_node_with_text(oc2_node, 'TEETH_CHECK', bool_to_str(od.teeth_check))
+            _make_node_with_text(oc2_node, 'HEALTH_ASSESSMENT', bool_to_str(od.health_assessment))
+            _make_node_with_text(oc2_node, 'SUBSTANCE_MISUSE', bool_to_str(od.substance_misuse))
+            _make_node_with_text(oc2_node, 'INTERVENTION_RECEIVED', bool_to_str(od.intervention_received))
+            _make_node_with_text(oc2_node, 'INTERVENTION_OFFERED', bool_to_str(od.intervention_offered))
+
         if child.adoption_data is not None:
+            ad = child.adoption_data
             # Only support a single adoption
             adoption_node = ET.SubElement(header, 'AD_PLACED')
             _make_node_with_text(adoption_node, 'DATE_PLACED', ad.start_date.strftime('%d/%m/%Y'))

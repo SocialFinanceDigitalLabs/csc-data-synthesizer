@@ -6,7 +6,7 @@ import datetime
 from typing import Optional, List, Dict, Tuple
 from scipy.stats import nbinom
 from copy import deepcopy
-from .types import AdoptionData, LeavingCareData, Probabilities, Episode, Review
+from .types import AdoptionData, LeavingCareData, OutcomesData, Probabilities, Episode, Review
 
 def generate_child_id() -> int:
     """
@@ -352,3 +352,17 @@ def generate_adoption_data(child_start_date, is_adopted) -> AdoptionData:
         ls_adopter=random.choice(['L0', 'L11',  'L12', 'L2', 'L3', 'L4'])
     )
 
+def generate_outcomes_data() -> OutcomesData:
+    has_sdq = random.choice([False, True])
+    return OutcomesData(
+        sdq_score=random.randint(1, 40) if has_sdq else None,
+        sdq_reason=None if has_sdq else 'SDQ' + random.choice('12345'),
+        convicted=random.choice([False, True]),
+        health_check=random.choice([False, True]),
+        immunisations=random.choice([False, True]),
+        teeth_check=random.choice([False, True]),
+        health_assessment=random.choice([False, True]),
+        substance_misuse=random.choice([False, True]),
+        intervention_received=random.choice([False, True]),
+        intervention_offered=random.choice([False, True]),
+    )

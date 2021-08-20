@@ -29,6 +29,11 @@ def snapshot_children_for_period(start_date: datetime.datetime, end_date: dateti
             elif not (starts_in_year or ends_in_year):
                 c.adoption_data = None
 
+        # Only provide OC3 data for children in care more than 12 months
+        # TODO: Account for gaps
+        if min(e.start_date for e in c.episodes) > end_date - datetime.timedelta(days=365):
+            c.outcomes_data = None
+
         # Remove end dates for episodes in future
         c.episodes = [deepcopy(e) for e in c.episodes if start_date < e.start_date < end_date or start_date < e.end_date < end_date]
         for episode in c.episodes:

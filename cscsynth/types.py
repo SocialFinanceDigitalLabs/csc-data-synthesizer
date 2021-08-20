@@ -47,6 +47,19 @@ class AdoptionData:
     ls_adopter: str
 
 @dataclass
+class OutcomesData:
+    sdq_score: Optional[int]
+    sdq_reason: Optional[str]
+    convicted: bool
+    health_check: bool
+    immunisations: bool
+    teeth_check: bool
+    health_assessment: bool
+    substance_misuse: bool
+    intervention_received: bool
+    intervention_offered: bool
+
+@dataclass
 class Child:
     upn: str
     child_id: int
@@ -62,6 +75,7 @@ class Child:
     missing_periods: Optional[List[Missing]] = None
     date_uasc_ceased: Optional[datetime.datetime] = None
     adoption_data: Optional[AdoptionData] = None
+    outcomes_data: Optional[OutcomesData] = None
 
 @dataclass
 class Probabilities:
