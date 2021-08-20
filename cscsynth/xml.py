@@ -23,6 +23,8 @@ def create_xml(children: List[Child], file_name: str) -> ET:
         header_add('DOB', child.dob.strftime('%d/%m/%Y'))
         header_add('ETHNIC', child.ethnicity)
         header_add('UASC', str(1) if child.date_uasc_ceased is not None else None)
+        if child.date_uasc_ceased is not None:
+            header_add('DUC', child.date_uasc_ceased.strftime('%d/%m/%Y'))
         if child.leaving_care_data is not None:
             header_add('IN_TOUCH', child.leaving_care_data.in_touch)
             header_add('ACTIV', child.leaving_care_data.activ)
