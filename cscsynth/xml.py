@@ -48,6 +48,12 @@ def create_xml(children: List[Child], file_name: str) -> ET:
         header_add('MOTHER', str(1) if child.mother_child_dob is not None else None)
         header_add('MC_DOB', child.mother_child_dob.strftime('%d/%m/%Y') if child.mother_child_dob is not None else None)
 
+        prev_perm_node = ET.SubElement(header, 'PERMANENCE')
+        _make_node_with_text(prev_perm_node, 'PREV_PERM', child.previous_permanent)
+        if child.prev_permanent_date is not None:
+            _make_node_with_text(prev_perm_node, 'DATE_PERM', child.prev_permanent_date.strftime('%d/%m/%Y'))
+        
+
         if child.outcomes_data is not None:
             od = child.outcomes_data
             bool_to_str = lambda x: '1' if x else '0'
