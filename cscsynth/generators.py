@@ -6,7 +6,7 @@ import datetime
 from typing import Optional, List, Dict, Tuple
 from scipy.stats import nbinom
 from copy import deepcopy
-from .types import AdoptionData, LeavingCareData, OutcomesData, Probabilities, Episode, Review
+from .types import AdoptionData, LeavingCareData, Missing, OutcomesData, Probabilities, Episode, Review
 
 def generate_child_id() -> int:
     """
@@ -366,3 +366,22 @@ def generate_outcomes_data() -> OutcomesData:
         intervention_received=random.choice([False, True]),
         intervention_offered=random.choice([False, True]),
     )
+
+def generate_missing_data(child_start_date, child_end_date, is_missing):
+    missing = []
+
+    if random.random() < is_missing:
+        # TODO: Allow for more than 2
+        num_missing = random.randint(1, 2)
+        for i in range(num_missing):
+            days_til_end = (child_end_date - child_start_date).days
+            start_date = child_start_date + datetime.timedelta(days=random.randint(0, days_til_end))
+            # Missing for 3-50 days
+            end_date = start_date + datetime.timedelta(days=random.randint(3, 50))
+            missing.append(Missing(
+                missing_type=random.choice(['M', 'A']),
+                start_date=start_date,
+                end_date=end_date,
+            ))
+
+    return missing

@@ -15,6 +15,7 @@ def create_csv(children: List[Child], output_dir: str):
     ad1_df = create_ad1(children)
     sbpfa_df = create_should_be_placed_for_adoption(children)
     prev_perm_df = create_previous_permanence(children)
+    missing_df = create_missing(children)
 
     header_df.to_csv(os.path.join(output_dir, 'header.csv'), index=False)
     episodes_df.to_csv(os.path.join(output_dir, 'episodes.csv'), index=False)
@@ -25,6 +26,7 @@ def create_csv(children: List[Child], output_dir: str):
     ad1_df.to_csv(os.path.join(output_dir, 'ad1.csv'), index=False)
     sbpfa_df.to_csv(os.path.join(output_dir, 'placed_for_adoption.csv'), index=False)
     prev_perm_df.to_csv(os.path.join(output_dir, 'previous_permanence.csv'), index=False)
+    missing_df.to_csv(os.path.join(output_dir, 'missing.csv'), index=False)
 
 def create_header(children: List[Child]) -> pd.DataFrame:
     return pd.DataFrame({
@@ -157,5 +159,17 @@ def create_previous_permanence(children: List[Child]) -> pd.DataFrame:
         data['PREV_PERM'].append(child.previous_permanent)
         data['LA_PERM'].append(None) # this needs to be inferred
         data['DATE_PERM'].append(child.prev_permanent_date.strftime('%d/%m/%Y') if child.prev_permanent_date is not None else None)
+
+    return pd.DataFrame(data)
+
+def create_missing(children: List[Child]) -> pd.DataFrame:
+    data = defaultdict(list)
+    for child in children:
+        for mp in child.missing_periods:
+            data['CHILD'].append(child.child_id)
+            data['DOB'].append(child.dob.strftime('%d/%m/%Y'))
+            data['MISSING'].append(mp.missing_type)
+            data['MIS_START'].append(mp.start_date.strftime('%d/%m/%Y'))
+            data['MIS_END'].append(mp.end_date.strftime('%d/%m/%Y') if mp.end_date is not None else None)
 
     return pd.DataFrame(data)

@@ -6,6 +6,7 @@ from .generators import (
     generate_adoption_data,
     generate_ethnicity,
     generate_leaving_care,
+    generate_missing_data,
     generate_outcomes_data,
     generate_upn,
     generate_child_id,
@@ -48,7 +49,7 @@ class ChildrenGenerator:
             reviews = generate_reviews(episodes, self.probabilities.review_frequency)
 
             # TODO: Generate a set of missing episodes
-            missing_periods = []
+            missing_periods = generate_missing_data(self.start_date, self.end_date, self.probabilities.is_missing)
             
             child = Child(
                 upn=upn,

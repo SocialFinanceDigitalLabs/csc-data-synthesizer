@@ -95,6 +95,7 @@ class Probabilities:
     is_uasc: float = 0.05
     is_mother: float = 0.01
     is_adopted: float = 0.05
+    is_missing: float = 0.05
     daily_episode_ending: float = 1 / 1000  # Average care length is around 1000 days
     daily_episode_changing: float = 1 / 300   # Average episode length is around 300 days
     average_extra_episode_rate: float = 0.15  

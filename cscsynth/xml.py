@@ -40,6 +40,13 @@ def create_xml(children: List[Child], file_name: str) -> ET:
             header_add('SEX_ADOPTR', ad.sex_adopter)
             header_add('LS_ADOPTR', ad.ls_adopter)
 
+        for missing in child.missing_periods:
+            missing_node = ET.SubElement(header, 'AMISSING')
+            _make_node_with_text(missing_node, 'MISSING', missing.missing_type)
+            _make_node_with_text(missing_node, 'MIS_START', missing.start_date.strftime('%d/%m/%Y'))
+            if missing.end_date is not None:
+                _make_node_with_text(missing_node, 'MIS_END', missing.end_date.strftime('%d/%m/%Y'))
+
         for review in child.reviews:
             reviews_node = ET.SubElement(header, 'AREVIEW')
             _make_node_with_text(reviews_node, 'REVIEW', review.review_date.strftime('%d/%m/%Y'))
@@ -81,9 +88,6 @@ def create_xml(children: List[Child], file_name: str) -> ET:
                 _make_node_with_text(adoption_node, 'REASON_PLACED_CEASED', ad.reason_ceased)
 
         # TODO: Add missing episodes
-
-        # TODO: Add previous permanance info
-        # TODO: Add OC2
 
         for episode in child.episodes:
             e_root = ET.SubElement(c_root, 'EPISODE')

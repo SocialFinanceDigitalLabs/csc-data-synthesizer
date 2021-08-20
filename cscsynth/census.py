@@ -34,6 +34,12 @@ def snapshot_children_for_period(start_date: datetime.datetime, end_date: dateti
         if min(e.start_date for e in c.episodes) > end_date - datetime.timedelta(days=365):
             c.outcomes_data = None
 
+        # Remove end dates for missing in future
+        c.missing_periods = [deepcopy(m) for m in c.missing_periods if start_date < m.start_date < end_date or start_date < m.end_date < end_date]
+        for episode in c.missing_periods:
+            if episode.end_date > end_date:
+                episode.end_date = None
+
         # Remove end dates for episodes in future
         c.episodes = [deepcopy(e) for e in c.episodes if start_date < e.start_date < end_date or start_date < e.end_date < end_date]
         for episode in c.episodes:
