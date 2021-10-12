@@ -1,11 +1,11 @@
-import os
+from pathlib import Path
+
 import pandas as pd
 from collections import defaultdict
-from copy import deepcopy
-from typing import List
+from typing import List, Union
 from .types import Child
 
-def create_csv(children: List[Child], output_dir: str):
+def create_csv(children: List[Child], output_dir: Union[Path,str]):
     header_df = create_header(children)
     episodes_df = create_episodes(children)
     uasc_df = create_uasc(children)
@@ -17,16 +17,18 @@ def create_csv(children: List[Child], output_dir: str):
     prev_perm_df = create_previous_permanence(children)
     missing_df = create_missing(children)
 
-    header_df.to_csv(os.path.join(output_dir, 'header.csv'), index=False)
-    episodes_df.to_csv(os.path.join(output_dir, 'episodes.csv'), index=False)
-    uasc_df.to_csv(os.path.join(output_dir, 'uasc.csv'), index=False)
-    reviews_df.to_csv(os.path.join(output_dir, 'reviews.csv'), index=False)
-    oc2_df.to_csv(os.path.join(output_dir, 'oc2.csv'), index=False)
-    oc3_df.to_csv(os.path.join(output_dir, 'oc3.csv'), index=False)
-    ad1_df.to_csv(os.path.join(output_dir, 'ad1.csv'), index=False)
-    sbpfa_df.to_csv(os.path.join(output_dir, 'placed_for_adoption.csv'), index=False)
-    prev_perm_df.to_csv(os.path.join(output_dir, 'previous_permanence.csv'), index=False)
-    missing_df.to_csv(os.path.join(output_dir, 'missing.csv'), index=False)
+    output_dir = Path(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    header_df.to_csv(output_dir / 'header.csv', index=False)
+    episodes_df.to_csv(output_dir / 'episodes.csv', index=False)
+    uasc_df.to_csv(output_dir / 'uasc.csv', index=False)
+    reviews_df.to_csv(output_dir / 'reviews.csv', index=False)
+    oc2_df.to_csv(output_dir / 'oc2.csv', index=False)
+    oc3_df.to_csv(output_dir / 'oc3.csv', index=False)
+    ad1_df.to_csv(output_dir / 'ad1.csv', index=False)
+    sbpfa_df.to_csv(output_dir / 'placed_for_adoption.csv', index=False)
+    prev_perm_df.to_csv(output_dir / 'previous_permanence.csv', index=False)
+    missing_df.to_csv(output_dir / 'missing.csv', index=False)
 
 def create_header(children: List[Child]) -> pd.DataFrame:
     return pd.DataFrame({
