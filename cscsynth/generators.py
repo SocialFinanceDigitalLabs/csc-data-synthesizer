@@ -4,6 +4,8 @@ import string
 import itertools
 import datetime
 from typing import Optional, List, Dict, Tuple
+
+from dateutil.relativedelta import relativedelta
 from scipy.stats import nbinom
 from copy import deepcopy
 from .types import AdoptionData, LeavingCareData, Missing, OutcomesData, Probabilities, Episode, Review
@@ -40,7 +42,7 @@ def generate_upn() -> str:
             seen_upns.add(upn)
             yield upn
 
-def generate_dob(reference_date: datetime.datetime, age_start: int = 1, age_end: int = 14) -> datetime.datetime:
+def generate_dob(reference_date: datetime.datetime, age_start: float = 0, age_end: float = 18) -> datetime.datetime:
     """
     Given a reference date, this will generate a date of birth such that the age is between age_start and age_end.
     The age is sampled uniformly from the range.
@@ -131,7 +133,7 @@ def generate_episodes(start_date, dob, probabilities: Probabilities) -> List[Epi
     episode_lengths = nbinom.rvs(n=1, p=probabilities.daily_episode_ending, size=total_num_care_episodes)
 
     # Allow up to 200 days between episodes
-    days_before = [random.randint(0, 200) for _ in range(total_num_care_episodes)]
+    days_before = [random.randint(0, 3012) for _ in range(total_num_care_episodes)]
 
     # We may generate a longer period than there is days before the 18th birthday
     # If this happens, we can ratio down the sizes of each event
@@ -145,12 +147,12 @@ def generate_episodes(start_date, dob, probabilities: Probabilities) -> List[Epi
 
     all_episodes = []
     for episode_start, episode_length in zip(episode_starts, episode_lengths):
-        episodes = generate_care_episode(episode_start, episode_length, probabilities)
+        episodes = generate_care_episode(episode_start, episode_length, probabilities, dob)
         all_episodes.append(episodes)
 
     return list(itertools.chain.from_iterable(all_episodes))
 
-def generate_care_episode(start_date: datetime.datetime, length_of_episode: int, probabilities: Probabilities):
+def generate_care_episode(start_date: datetime.datetime, length_of_episode: int, probabilities: Probabilities, dob):
     """
     Generates a specific set of care episodes that directly relate to the same period of care (but with different
     legal status or placements).
@@ -170,7 +172,7 @@ def generate_care_episode(start_date: datetime.datetime, length_of_episode: int,
     :returns: A list of episodes for this period of care.
     """
 
-    place, place_provider, home_postcode, place_postcode, urn = _generate_new_placement()
+    place, place_provider, home_postcode, place_postcode, urn = _generate_new_placement(start_date, dob)
     start_episode = Episode(
         start_date=start_date,
         end_date=None,
@@ -208,8 +210,8 @@ def generate_care_episode(start_date: datetime.datetime, length_of_episode: int,
                 next_episode.legal_status = _generate_legal_status()
 
             # Change of placement
-            if new_reason in ['P', 'T', 'B', 'U']:
-                next_episode.place, next_episode.place_provider, next_episode.home_postcode, next_episode.place_postcode, next_episode.urn = _generate_new_placement()
+            if new_reason in ['P', 'B']:
+                next_episode.place, next_episode.place_provider, next_episode.home_postcode, next_episode.place_postcode, next_episode.urn = _generate_new_placement(current_date, dob)
                 last_episode.reason_place_change = generate_reason_place_change()
 
             episodes.append(next_episode)
@@ -249,7 +251,7 @@ def generate_reason_place_change() -> str:
         'CARPL', 'CLOSE', 'ALLEG', 'STAND', 'APPRR', 'CREQB', 'CREQO', 'CHILD', 'LAREQ', 'PLACE', 'CUSTOD', 'OTHER'
     ])
 
-def _generate_new_placement() -> Tuple[str, str, str, str, str]:
+def _generate_new_placement(current_date, dob) -> Tuple[str, str, str, str, str]:
     """
     Generates all the information for a new placement. Currently
     - Placement type is uniformly sampled from the codeset
@@ -257,14 +259,44 @@ def _generate_new_placement() -> Tuple[str, str, str, str, str]:
     - Home and placement postcodes are randomly generated.
     - URN is a random 7-digit number.
 
+    :param current_date: Date of placement allocation
+    :param dob: The date of birth of the child (used for placement selection)
     :returns: placement_type, placement_code, home_postcode, place_postcode, urn
     """
-    placement_type = random.choice([
-        'A3', 'A4', 'A5', 'A6', 'H5', 'K1', 'K2', 'P1', 'P2', 'P3', 'R1', 'R2', 'R3', 'R5',
-        'S1', 'T0', 'T1', 'T2', 'T3', 'T4', 'U1', 'U2', 'U3', 'U4', 'U5', 'U6', 'Z1'
-    ])
+    age_in_years = (current_date - dob) / datetime.timedelta(days=365)
+    if age_in_years < 5:
+        placement_type = random.choices([
+        'A3', 'A4', 'A5', 'A6', 'P1', 'R2', 'R3', 'U1', 'U2', 'U3', 'U4', 'U5', 'U6'
+        ],
+        weights=[0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.445, 0.445, 0.01])[0]
+    elif age_in_years < 16:
+        placement_type = random.choices([
+        'A3', 'A4', 'A5', 'A6', 'P1', 'R2', 'R3', 'U1', 'U2', 'U3', 'U4', 'U5', 'U6', 'K1', 'K2', 'R1', 'S1'
+        ],
+        weights=[0.01, 0.01, 0.01, 0.01, 0.05, 0.01, 0, 0.03, 0.03, 0.03, 0.325, 0.325, 0.01, 0.005, 0.125, 0.01,
+                 0.01])[0]
+    else:
+        placement_type = random.choices([
+        'A3', 'A4', 'A5', 'A6', 'P1', 'R2', 'R3', 'U1', 'U2', 'U3', 'U4', 'U5', 'U6', 'K1', 'K2', 'R1', 'S1',
+        'P2', 'H5', 'R5', 'P3'
+        ],
+        weights=[0.01, 0.01, 0.01, 0.01, 0.05, 0.01, 0, 0.01, 0.01, 0.01, 0.08, 0.08, 0.01, 0.005, 0.05, 0.01, 0.01,
+                 0.35, 0.35, 0.05, 0.01])[0]
 
-    placement_code = random.choice([f'PR{i}' for i in range(6)])
+    if placement_type in ['A3', 'A4', 'A5', 'A6']:
+        placement_code = random.choices([f'PR{i}' for i in range(6)], weights=[0, 0.5, 0, 0, 0.5, 0])[0]
+    elif placement_type in ['P1']:
+        placement_code = 'PR0'
+    elif placement_type in ['R2', 'R3', 'R5', 'P3']:
+        placement_code = 'PR3'
+    elif placement_type in ['U1', 'U2', 'U3']:
+        placement_code = 'PR1'
+    elif placement_type in ['U4', 'U5', 'U6']:
+        placement_code = random.choices([f'PR{i}' for i in range(6)], weights=[0, 0.5, 0, 0, 0.5, 0])[0]
+    elif placement_type in ['R1', 'K2', 'S1', 'P2', 'H5']:
+        placement_code = random.choices([f'PR{i}' for i in range(6)], weights=[0, 0.25, 0, 0, 0.75, 0])[0]
+    else:
+        placement_code = 'PR4'
 
     home_postcode = _generate_postcode()
     place_postcode = _generate_postcode()
