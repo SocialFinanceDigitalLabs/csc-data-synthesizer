@@ -15,20 +15,51 @@ The data generated is unlikely to match all validation rules as much of it is ra
 
 Eventually we will be able to simulate poor/missing data by adjusting step 2 to include random errors.
 
-# Installation and example usage
+## What do I need?
 
-Checkout the repo, and run
+Patience. And a few tools. Most importantly you need [Python][python]. Follow the links
+to download a recent version and install this.
 
+Next, we use [Poetry][poetry] for dependency management. Once you have
+working python version installed, installing Poetry should be as easy as following
+the steps on [this page][poetry-install].
+
+However, it's not always that easy. If those steps don't work, download the installer
+from [this link][poetry-script]. Find your downloaded file, and the launch it
+by running `python install-poetry.py` where `install-poetry.py` is the name of the
+downloaded file.
+
+Now you are ready to check out this project. If you're not familiar with GIT, try
+one of the many tutorials available online. For windows, I can recommend
+[this one][git-tutorial].
+
+Once you have checked out this repository, install the required libraries:
+
+```shell
+poetry install
 ```
-pip install .
+
+You can now chose to either activate a poetry "shell" or prefix every command
+with "poetry run". To activate a poetry shell, type:
+
+```shell
+poetry shell
 ```
 
 For a basic generation workflow, you then run
 
-```
-<code to follow>
+```shell
+python examples/<your command here>.py
 ```
 
 # Contribution guidelines
 
 There are plenty of open issues to improve the generation procedure - feel free to make a PR to solve any of these.
+
+[python]: https://www.python.org/downloads/
+[poetry]: https://python-poetry.org/
+[poetry-install]: https://python-poetry.org/docs/master/#installation
+[poetry-script]: https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py
+
+[git-tutorial]: https://www.computerhope.com/issues/ch001927.htm
+[github-fork]: https://docs.github.com/en/get-started/quickstart/fork-a-repo
