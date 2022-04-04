@@ -53,7 +53,7 @@ def create_episodes(children: List[Child]) -> pd.DataFrame:
             data['CIN'].append(episode.cin)
             data['PLACE'].append(episode.place)
             data['PLACE_PROVIDER'].append(episode.place_provider)
-            data['DEC'].append(episode.end_date.strftime('%d/%m/%y') if episode.end_date is not None else None)
+            data['DEC'].append(episode.end_date.strftime('%d/%m/%Y') if episode.end_date is not None else None)
             data['REC'].append(episode.reason_end)
             data['REASON_PLACE_CHANGE'].append(episode.reason_place_change)
             data['HOME_POST'].append(episode.home_postcode)
